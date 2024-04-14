@@ -28,7 +28,12 @@ def write_to_csv(results, filename):
         'datetime_utc', 'distance_au', 'velocity_km_s',
         'designation', 'name', 'diameter_km', 'potentially_hazardous'
     )
-    # TODO: Write the results to a CSV file, following the specification in the instructions.
+    with open(filename, "w") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for result in results:
+            content = {**result.serialize(), **result.neo.serialize()}
+            writer.writerow(content)
 
 
 def write_to_json(results, filename):
@@ -42,4 +47,23 @@ def write_to_json(results, filename):
     :param results: An iterable of `CloseApproach` objects.
     :param filename: A Path-like object pointing to where the data should be saved.
     """
-    # TODO: Write the results to a JSON file, following the specification in the instructions.
+    data = []
+    for result in results:
+        dictData = {**result.serialize(), **result.neo.serialize(isJson=True)}
+        dictData["potentially_hazardous"] = bool(1) if dictData["potentially_hazardous"] else bool(0)
+        data.append(
+            {
+                "datetime_utc": dictData["datetime_utc"],
+                "distance_au": dictData["distance_au"],
+                "velocity_km_s": dictData["velocity_km_s"],
+                "neo": {
+                    "designation": dictData["designation"],
+                    "name": dictData["name"],
+                    "diameter_km": dictData["diameter_km"],
+                    "potentially_hazardous": dictData["potentially_hazardous"],
+                },
+            }
+        )
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent="\t")

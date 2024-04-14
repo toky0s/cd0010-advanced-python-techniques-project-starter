@@ -42,9 +42,18 @@ class NEODatabase:
         self._neos = neos
         self._approaches = approaches
 
-        # TODO: What additional auxiliary data structures will be useful?
+        dictDesignationIndex = {neo.designation: index for index, neo in enumerate(self._neos)}
 
-        # TODO: Link together the NEOs and their close approaches.
+        # NearEarthObject 1 - n CloseApproach
+        for approach in self._approaches:
+            if approach._designation in dictDesignationIndex.keys():
+                index = dictDesignationIndex[approach._designation]
+                approach.neo = self._neos[index]
+                self._neos[index].approaches.append(approach)
+
+        self.dictDesignationNeo = {neo.designation: neo for neo in self._neos}
+        self.dictNameNeo = {neo.name: neo for neo in self._neos}
+
 
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
@@ -59,7 +68,8 @@ class NEODatabase:
         :param designation: The primary designation of the NEO to search for.
         :return: The `NearEarthObject` with the desired primary designation, or `None`.
         """
-        # TODO: Fetch an NEO by its primary designation.
+        if (designation):
+            return self.dictDesignationNeo.get(designation, None)
         return None
 
     def get_neo_by_name(self, name):
@@ -76,7 +86,8 @@ class NEODatabase:
         :param name: The name, as a string, of the NEO to search for.
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
-        # TODO: Fetch an NEO by its name.
+        if name:
+            return self.dictNameNeo.get(name, None)
         return None
 
     def query(self, filters=()):
@@ -93,6 +104,14 @@ class NEODatabase:
         :param filters: A collection of filters capturing user-specified criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
-        # TODO: Generate `CloseApproach` objects that match all of the filters.
-        for approach in self._approaches:
-            yield approach
+        isPass = True
+        if filters:
+            for approach in self._approaches:
+                for filter in filters:
+                    isPass = isPass and filter(approach)
+                if isPass:
+                    yield approach
+                isPass = True
+        else:
+            for approach in self._approaches:
+                yield approach
