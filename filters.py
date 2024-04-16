@@ -41,6 +41,7 @@ class AttributeFilter:
     Concrete subclasses can override the `get` classmethod to provide custom
     behavior to fetch a desired attribute from the given `CloseApproach`.
     """
+
     def __init__(self, op, value):
         """Construct a new `AttributeFilter` from an binary predicate and a reference value.
 
@@ -72,6 +73,7 @@ class AttributeFilter:
         raise UnsupportedCriterionError
 
     def __repr__(self):
+        """Return machine-friendly AttributeFilter information."""
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
 
 
@@ -148,30 +150,70 @@ def limit(iterator, n=None):
     """
     if n == 0 or n is None:
         return iterator
-    return [i for i in itertools.islice(iterator, 0, n)]
+    return itertools.islice(iterator, 0, n)
 
 
 class DateFilter(AttributeFilter):
+    """A filter that inherits from AttributeFilter allows filtering by time."""
+
     @classmethod
     def get(cls, approach: CloseApproach):
+        """
+        Return approach's time as a date.
+
+        :param cls: DateFilter
+        :param approach: A close approach
+        """
         return approach.time.date()
 
 class DistanceFilter(AttributeFilter):
+    """A filter that inherits from AttributeFilter allows filtering by distance."""
+
     @classmethod
     def get(cls, approach: CloseApproach):
+        """
+        Return approach's distance.
+
+        :param cls: DistanceFilter
+        :param approach: A close approach
+        """
         return approach.distance
 
 class VelocityFilter(AttributeFilter):
+    """A filter that inherits from AttributeFilter allows filtering by velocity."""
+
     @classmethod
     def get(cls, approach: CloseApproach):
+        """
+        Return approach's velocity.
+
+        :param cls: VelocityFilter
+        :param approach: A close approach
+        """
         return approach.velocity
 
 class DiameterFilter(AttributeFilter):
+    """A filter that inherits from AttributeFilter allows filtering by neo diameter."""
+
     @classmethod
     def get(cls, approach: CloseApproach):
+        """
+        Return approach's neo diameter.
+
+        :param cls: DiameterFilter
+        :param approach: A close approach
+        """
         return approach.neo.diameter
 
 class HazardousFilter(AttributeFilter):
+    """A filter that inherits from AttributeFilter allows filtering by hazardous."""
+
     @classmethod
     def get(cls, approach: CloseApproach):
+        """
+        Return approach's neo hazardous.
+
+        :param cls: HazardousFilter
+        :param approach: A close approach
+        """
         return approach.neo.hazardous

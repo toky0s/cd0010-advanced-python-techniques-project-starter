@@ -48,8 +48,8 @@ def load_approaches(cad_json_path):
     """
     with open(cad_json_path) as carJsonFile:
         import json
-        json = json.load(carJsonFile)
-        lines = [dict(zip(json["fields"], data)) for data in json["data"]]
+        jsonData = json.load(carJsonFile)
+        lines = [dict(zip(jsonData["fields"], data)) for data in jsonData["data"]]
         approaches = []
         for line in lines:
             approach = CloseApproach(

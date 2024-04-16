@@ -34,6 +34,7 @@ class NearEarthObject:
     initialized to an empty collection, but eventually populated in the
     `NEODatabase` constructor.
     """
+
     def __init__(self, **info):
         """Create a new `NearEarthObject`.
 
@@ -65,6 +66,7 @@ class NearEarthObject:
                f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})"
 
     def serialize(self, isJson=False):
+        """Return a Dict representation of designation, name, diameter_km and potentially_hazardous."""
         if isJson:
             return {
             "designation": self.designation,
@@ -93,6 +95,7 @@ class CloseApproach:
     private attribute, but the referenced NEO is eventually replaced in the
     `NEODatabase` constructor.
     """
+
     def __init__(self, **info):
         """Create a new `CloseApproach`.
 
@@ -136,8 +139,7 @@ class CloseApproach:
                f"velocity={self.velocity:.2f}, neo={self.neo!r})"
 
     def serialize(self):
-        """Return a Dict representation of datetime_utc, distance_au and velocity_km_s
-        """
+        """Return a Dict representation of datetime_utc, distance_au and velocity_km_s."""
         return {
             "datetime_utc": datetime_to_str(self.time),
             "distance_au": self.distance,

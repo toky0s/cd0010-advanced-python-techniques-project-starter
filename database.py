@@ -21,6 +21,7 @@ class NEODatabase:
     help fetch NEOs by primary designation or by name and to help speed up
     querying for close approaches that match criteria.
     """
+    
     def __init__(self, neos, approaches):
         """Create a new `NEODatabase`.
 
@@ -42,16 +43,15 @@ class NEODatabase:
         self._neos = neos
         self._approaches = approaches
 
-        dictDesignationIndex = {neo.designation: index for index, neo in enumerate(self._neos)}
+        self.dictDesignationNeo = {neo.designation: neo for neo in self._neos}
 
         # NearEarthObject 1 - n CloseApproach
         for approach in self._approaches:
-            if approach._designation in dictDesignationIndex.keys():
-                index = dictDesignationIndex[approach._designation]
-                approach.neo = self._neos[index]
-                self._neos[index].approaches.append(approach)
-
-        self.dictDesignationNeo = {neo.designation: neo for neo in self._neos}
+            if approach._designation in self.dictDesignationNeo.keys():
+                neo = self.dictDesignationNeo[approach._designation]
+                approach.neo = neo
+                neo.approaches.append(approach)
+        
         self.dictNameNeo = {neo.name: neo for neo in self._neos}
 
 
@@ -104,14 +104,10 @@ class NEODatabase:
         :param filters: A collection of filters capturing user-specified criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
-        isPass = True
         if filters:
             for approach in self._approaches:
-                for filter in filters:
-                    isPass = isPass and filter(approach)
-                if isPass:
+                if all(f(approach) for f in filters):
                     yield approach
-                isPass = True
         else:
             for approach in self._approaches:
                 yield approach
